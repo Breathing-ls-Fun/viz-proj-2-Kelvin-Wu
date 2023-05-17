@@ -1,19 +1,19 @@
 // set the dimensions and margins of the graph
-var margin = {top: 50, right: 50, bottom: 200, left: 50},
+var margin2 = {top: 170, right: 50, bottom: 50, left: 50},
     width = 600 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
-var svg2 = d3.select("#weakness")
+var svg3 = d3.select("#threat")
   .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("width", width + margin2.left + margin2.right)
+    .attr("height", height + margin2.top + margin2.bottom)
   .append("g")
     .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
+          "translate(" + margin2.left + "," + margin2.top + ")");
 
 // Parse the Data
-d3.csv("Weakness Analysis Data.csv", function(data) {
+d3.csv("Threat Analysis Data.csv?t="+Date.now(), function(data) {
     var cols = [data.columns] 
     
     var rows = d3.map(data, function(d){return(d['PARAM NAME'])}).keys()
@@ -48,11 +48,11 @@ d3.csv("Weakness Analysis Data.csv", function(data) {
             .domain(groups)
             .range([0, width])
             .padding([0.2])
-    svg2.append("g")
+    svg3.append("g")
             .attr("transform", "translate(0,0)")
-            .call(d3.axisBottom(x))
+            .call(d3.axisTop(x))
             .selectAll("text")
-            .attr("transform", "translate(10,-15)rotate(50)")
+            .attr("transform", "translate(0,0)rotate(50)")
             .style("text-anchor", "end");
     
     min_val = d3.min(data, function(d){return d["EST. VALUE IN CURRENCY"]})
@@ -62,7 +62,7 @@ d3.csv("Weakness Analysis Data.csv", function(data) {
     var y = d3.scaleLinear()
             .domain([min_val*1.1, 0])
             .range([ height, 0 ]);
-    svg2.append("g")
+    svg3.append("g")
             .call(d3.axisLeft(y));
 
     // Another scale for subgroup position?
@@ -74,10 +74,10 @@ d3.csv("Weakness Analysis Data.csv", function(data) {
     // color palette = one color per subgroup
     var color = d3.scaleOrdinal()
                 .domain(subgroups)
-                .range(['#e41a1c','#377eb8','#4daf4a', '#444444', '#ffbabe', 'babeff'])
+                .range(['#889944','#65778a','#0973ff', '#6834de', '#d34469', '#667345'])
 
     // Show the bars
-    svg2.append("g")
+    svg3.append("g")
         .selectAll("g")
         // Enter in data = loop group per group
         .data(a)
@@ -88,9 +88,9 @@ d3.csv("Weakness Analysis Data.csv", function(data) {
         .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
         .enter().append("rect")
         .attr("x", function(d) { return xSubgroup(d.key); })
-        .attr("y", function(d) { return y(d.value); })
+        .attr("y", function(d) { return 0; })
         .attr("width", xSubgroup.bandwidth())
-        .attr("height", function(d) { return height - y(d.value); })
+        .attr("height", function(d) { return y(d.value); })
         .attr("fill", function(d) { return color(d.key); });
 
     })

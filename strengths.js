@@ -12,8 +12,8 @@ var svg0 = d3.select("#strength")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-// Parse the Datafcds
-d3.csv("Strength AnalysisData.csv", function(data) {
+// Parse the Data
+d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data) {
     var cols = [data.columns] 
     
     var rows = d3.map(data, function(d){return(d['PARAM NAME'])}).keys()
@@ -73,7 +73,7 @@ d3.csv("Strength AnalysisData.csv", function(data) {
     // color palette = one color per subgroup
     var color = d3.scaleOrdinal()
                 .domain(subgroups)
-                .range(['#e41a1c','#377eb8','#4daf4a', ])
+                .range(['#e41a1c','#377eb8','#4daf4a', '#8820da', '#dede43', '#71f3ba'])
 
     // Show the bars
     svg0.append("g")
