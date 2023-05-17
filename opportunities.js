@@ -106,7 +106,7 @@ d3.csv("Opportunity Analysis Data.csv?t="+Date.now(), function(data) {
         // color palette = one color per subgroup
         var color = d3.scaleOrdinal()
                 .domain(subgroups)
-                .range(['#e41a1c','#377eb8','#4daf4a', '#8820da', '#dede43', '#71f3ba'])
+                .range(['#78ad9f', '#ffbabe', '#5577ff', '#f04520', '#6e13f4', '#8594a8'])
 
         // Show the bars
         svg1.append("g")
