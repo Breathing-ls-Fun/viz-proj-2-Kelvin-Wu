@@ -6,9 +6,28 @@
 <body>
     <h1 align="center"><b>SWOT Analysis</b></h1>
     <h5 align="center">by: Kelvin Wu</h5>
-    <p>
-        <button onClick="window.location.href=window.location.href">Refresh</button>
-        <button onClick="" id="render">Render</button>
+    <p align="center">
+        <form action="POST" align="center" id="swot_form">
+            <label for="CATEGORY">Category:</label>
+            <select id="CATEGORY" name="CATEGORY" value="Strength">
+                <option value="Strength">Strength</option>
+                <option value="Weakness">Weakness</option>
+                <option value="Opportunity">Opportunity</option>
+                <option value="Threat">Threat</option>
+            </select>
+            <label for="PARAM NAME">Param Name:</label>
+            <input type="text" id="PARAM NAME" name="PARAM NAME" value="" required>
+            <label for="VALUE IN CURRENCY">Value in Currency:</label>
+            <input type="number" id="VALUE IN CURRENCY" name="VALUE IN CURRENCY" value="">
+            <label for="MIN PROB  %">Min Prob  %:</label>
+            <input type="number" id="MIN PROB  %" name="MIN PROB  %" value="">
+            <label for="REALISTIC PROB  %">Realistic Prob  %:</label>
+            <input type="number" id="REALISTIC PROB  %" name="REALISTIC PROB  %" value="">
+            <label for="MAX PROB %">Max Prob %:</label>
+            <input type="number" id="MAX PROB %" name="MAX PROB %" value=""><br><br>
+            <button onClick="window.location.href=window.location.href">Refresh</button>
+            <input type="submit" value="Submit">
+          </form> 
     </p>
     <table align="center" style="border:1px solid black;border-collapse:collapse">
         <tr>
@@ -207,6 +226,33 @@
                 }
 
             })
+    </script>
+    <!-- Handle Form -->
+    <script>
+        let swot_form = document.getElementById("swot_form");
+
+        swot_form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            // handle submit
+            let category_form = document.getElementById('CATEGORY');
+            console.log("category:", category_form.value);
+
+            let param_name_form = document.getElementById('PARAM NAME');
+            console.log("param name:", param_name_form.value);
+
+            let value_in_cur = document.getElementById('VALUE IN CURRENCY');
+            console.log("value in cur:", value_in_cur.value);
+
+            let min_prob = document.getElementById('MIN PROB  %');
+            console.log("min prob:", min_prob.value);
+
+            let realistic_prob = document.getElementById('REALISTIC PROB  %');
+            console.log("realistic prob:", realistic_prob.value);
+
+            let max_prob = document.getElementById('MAX PROB %');
+            console.log("max prob:", max_prob.value);
+    });
     </script>
 </body>
 </html>
