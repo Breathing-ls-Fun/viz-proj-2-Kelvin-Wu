@@ -13,15 +13,33 @@ var svg2 = d3.select("#weakness")
           "translate(" + margin2.left + "," + margin2.top + ")");
 
 // Parse the Data
-d3.csv("Weakness Analysis Data.csv?t="+Date.now(), function(data) {
-    var cols = [data.columns] 
-    
+d3.csv("Weakness Analysis Data.csv?t="+Date.now(), function(data2) {
+    var cols = [data2.columns]
+    console.log("data: ", data2)
+    sessionStorage.origcount_W = data2.length;
+    console.log("keys cnt: ", sessionStorage.origcount_W)
+
+
+    var names = [data2.columns[4], data2.columns[10], data2.columns[11], data2.columns[12], data2.columns[13], data2.columns[14], data2.columns[15]]
+    // console.log(names)
+
+    var stored = []
+    if (sessionStorage.submitcount_W){
+        for(var i=1; i < +sessionStorage.submitcount_W+1; i++){
+            const str = sessionStorage.getItem("W"+i.toString())
+            const parsedobj = JSON.parse(str)
+            stored.push(parsedobj)
+            console.log("parsed OBJs: ", parsedobj)
+        }
+        console.log("stored OBJs: ", stored)
+    }
+
+    const data = data2.concat(stored)
+    console.log("data2: ", data)
+
     var rows = d3.map(data, function(d){return(d['PARAM NAME'])}).keys()
     // console.log(rows)
 
-    var names = [data.columns[4], data.columns[10], data.columns[11], data.columns[12], data.columns[13], data.columns[14], data.columns[15]]
-    // console.log(names)
-      
     var a = []
 
     for(let i = 0; i < names.length; i++){
@@ -32,6 +50,9 @@ d3.csv("Weakness Analysis Data.csv?t="+Date.now(), function(data) {
         }
         a.push(obj)
     }
+
+    sessionStorage.origin_w = a
+    console.log(a)
 
     data.forEach(function(d) {
         d["EST. VALUE IN CURRENCY"] = +d["EST. VALUE IN CURRENCY"];
@@ -45,6 +66,12 @@ d3.csv("Weakness Analysis Data.csv?t="+Date.now(), function(data) {
 
     // draw graph initially
     redrawW("linear")
+
+    //radio button
+    d3.selectAll(("input[name='scaleW']")).on("change", function() {
+        // console.log(this.value)
+        redrawW(this.value)
+    });
 
     function redrawW(s) {
         svg2.selectAll("*").remove();

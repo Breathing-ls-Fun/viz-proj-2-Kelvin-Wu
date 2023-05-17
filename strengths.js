@@ -13,15 +13,33 @@ var svg0 = d3.select("#strength")
           "translate(" + margin.left + "," + margin.top + ")");
 
 // Parse the Data
-d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data) {
-    var cols = [data.columns] 
-    
+d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data2) {
+    var cols = [data2.columns]
+    console.log("data: ", data2)
+    sessionStorage.origcount_S = data2.length;
+    console.log("keys cnt: ", sessionStorage.origcount_S)
+
+
+    var names = [data2.columns[4], data2.columns[10], data2.columns[11], data2.columns[12], data2.columns[13], data2.columns[14], data2.columns[15]]
+    // console.log(names)
+
+    var stored = []
+    if (sessionStorage.submitcount_S){
+        for(var i=1; i < +sessionStorage.submitcount_S+1; i++){
+            const str = sessionStorage.getItem("S"+i.toString())
+            const parsedobj = JSON.parse(str)
+            stored.push(parsedobj)
+            console.log("parsed OBJs: ", parsedobj)
+        }
+        console.log("stored OBJs: ", stored)
+    }
+
+    const data = data2.concat(stored)
+    console.log("data2: ", data)
+
     var rows = d3.map(data, function(d){return(d['PARAM NAME'])}).keys()
     // console.log(rows)
 
-    var names = [data.columns[4], data.columns[10], data.columns[11], data.columns[12], data.columns[13], data.columns[14], data.columns[15]]
-    // console.log(names)
-      
     var a = []
 
     for(let i = 0; i < names.length; i++){
@@ -33,9 +51,13 @@ d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data) {
         a.push(obj)
     }
 
+    sessionStorage.origin_s = a
+    console.log(a)
+
     data.forEach(function(d) {
         d["EST. VALUE IN CURRENCY"] = +d["EST. VALUE IN CURRENCY"];
         });
+
 
     // List of subgroups = header of the csv files = soil condition here
     var subgroups = rows
@@ -46,14 +68,14 @@ d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data) {
     // draw graph initially
     redrawS("linear")
     
-    // //radio button
-    // d3.selectAll(("input[name='scale']")).on("change", function() {
-    //     // console.log(this.value)
-    //     redrawS(this.value)
-    // });
+    //radio button
+    d3.selectAll(("input[name='scaleS']")).on("change", function() {
+        // console.log(this.value)
+        redrawS(this.value)
+    });
 
     function redrawS(s) {
-        // svg0.selectAll("*").remove();
+        svg0.selectAll("*").remove();
         // Add X axis
         var x = d3.scaleBand()
             .domain(groups)

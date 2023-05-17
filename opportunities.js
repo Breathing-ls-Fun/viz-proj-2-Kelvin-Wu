@@ -12,15 +12,33 @@ var svg1 = d3.select("#opportunity")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Parse the Data
-d3.csv("Opportunity Analysis Data.csv?t="+Date.now(), function(data) {
-    var cols = [data.columns] 
-    
+d3.csv("Opportunity Analysis Data.csv?t="+Date.now(), function(data2) {
+    var cols = [data2.columns]
+    console.log("data: ", data2)
+    sessionStorage.origcount_O = data2.length;
+    console.log("keys cnt: ", sessionStorage.origcount_O)
+
+
+    var names = [data2.columns[4], data2.columns[10], data2.columns[11], data2.columns[12], data2.columns[13], data2.columns[14], data2.columns[15]]
+    // console.log(names)
+
+    var stored = []
+    if (sessionStorage.submitcount_O){
+        for(var i=1; i < +sessionStorage.submitcount_O+1; i++){
+            const str = sessionStorage.getItem("O"+i.toString())
+            const parsedobj = JSON.parse(str)
+            stored.push(parsedobj)
+            console.log("parsed OBJs: ", parsedobj)
+        }
+        console.log("stored OBJs: ", stored)
+    }
+
+    const data = data2.concat(stored)
+    console.log("data2: ", data)
+
     var rows = d3.map(data, function(d){return(d['PARAM NAME'])}).keys()
     // console.log(rows)
 
-    var names = [data.columns[4], data.columns[10], data.columns[11], data.columns[12], data.columns[13], data.columns[14], data.columns[15]]
-    // console.log(names)
-      
     var a = []
 
     for(let i = 0; i < names.length; i++){
@@ -31,6 +49,10 @@ d3.csv("Opportunity Analysis Data.csv?t="+Date.now(), function(data) {
         }
         a.push(obj)
     }
+
+    sessionStorage.origin_o = a
+    console.log(a)
+
 
     data.forEach(function(d) {
         d["EST. VALUE IN CURRENCY"] = +d["EST. VALUE IN CURRENCY"];

@@ -6,10 +6,14 @@
 <body>
     <h1 align="center"><b>SWOT Analysis</b></h1>
     <h5 align="center">by: Kelvin Wu</h5>
+    
     <p align="center">
+        <button onClick="window.location.href=window.location.href">Refresh</button>
+        <button onClick="sessionStorage.clear()">Clear Storage</button>
         <form action="POST" align="center" id="swot_form">
             <label for="CATEGORY">Category:</label>
-            <select id="CATEGORY" name="CATEGORY" value="Strength">
+            <select id="CATEGORY" name="CATEGORY" value="" required>
+                <option value="">Select a category</option>
                 <option value="Strength">Strength</option>
                 <option value="Weakness">Weakness</option>
                 <option value="Opportunity">Opportunity</option>
@@ -18,38 +22,93 @@
             <label for="PARAM NAME">Param Name:</label>
             <input type="text" id="PARAM NAME" name="PARAM NAME" value="" required>
             <label for="VALUE IN CURRENCY">Value in Currency:</label>
-            <input type="number" id="VALUE IN CURRENCY" name="VALUE IN CURRENCY" value="">
+            <input type="number" id="VALUE IN CURRENCY" name="VALUE IN CURRENCY" value="0">
             <label for="MIN PROB  %">Min Prob  %:</label>
-            <input type="number" id="MIN PROB  %" name="MIN PROB  %" value="">
+            <input type="number" id="MIN PROB  %" name="MIN PROB  %" value="0">
             <label for="REALISTIC PROB  %">Realistic Prob  %:</label>
-            <input type="number" id="REALISTIC PROB  %" name="REALISTIC PROB  %" value="">
+            <input type="number" id="REALISTIC PROB  %" name="REALISTIC PROB  %" value="0">
             <label for="MAX PROB %">Max Prob %:</label>
-            <input type="number" id="MAX PROB %" name="MAX PROB %" value=""><br><br>
-            <button onClick="window.location.href=window.location.href">Refresh</button>
+            <input type="number" id="MAX PROB %" name="MAX PROB %" value="0"><br><br>
             <input type="submit" value="Submit">
           </form> 
     </p>
     <table align="center" style="border:1px solid black;border-collapse:collapse">
         <tr>
             <td style="border:1px solid black;border-collapse:collapse">
-                <h2 align="center">Strengths</h2>
+                <form class="controls">
+                    <b>Scale:</b>
+                    <label>
+                        <label>
+                            <input type="radio" name="scaleS" value="linear" checked>Linear
+                        </label>
+                        <label>
+                            <input type="radio" name="scaleS" value="log">Log
+                        </label> 
+                    </label>
+                </form>
+            </td>
+            <td style="border:1px solid black;border-collapse:collapse">
+                <form class="controls">
+                    <b>Scale:</b>
+                    <label>
+                        <label>
+                            <input type="radio" name="scaleO" value="linear" checked>Linear
+                        </label>
+                        <label>
+                            <input type="radio" name="scaleO" value="log">Log
+                        </label> 
+                    </label>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:1px solid black;border-collapse:collapse">
+                <h2 align="center">Strengths (Postive)</h2>
                 <div id="strength"></div>
                 <script src="strengths.js"></script>
             </td>
             <td style="border:1px solid black;border-collapse:collapse">
-                <h2 align="center">Opportunities</h2>
+                <h2 align="center">Opportunities (Postive)</h2>
                 <div id="opportunity"></div>
                 <!-- <script src="opportunities.js"></script> -->
             </td>
         </tr>
         <tr>
             <td style="border:1px solid black;border-collapse:collapse">
-                <h2 align="center">Weaknesses</h2>
+                <form class="controls">
+                    <b>Scale:</b>
+                    <label>
+                        <label>
+                            <input type="radio" name="scaleW" value="linear" checked>Linear
+                        </label>
+                        <label>
+                            <input type="radio" name="scaleW" value="log">Log
+                        </label> 
+                    </label>
+                </form>
+            </td>
+            <td style="border:1px solid black;border-collapse:collapse">
+                <form class="controls">
+                    <b>Scale:</b>
+                    <label>
+                        <label>
+                            <input type="radio" name="scaleT" value="linear" checked>Linear
+                        </label>
+                        <label>
+                            <input type="radio" name="scaleT" value="log">Log
+                        </label> 
+                    </label>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td style="border:1px solid black;border-collapse:collapse">
+                <h2 align="center">Weaknesses (Negative)</h2>
                 <div id="weakness"></div>
                 <script src="weaknesses.js"></script>
             </td>
             <td style="border:1px solid black;border-collapse:collapse"> 
-                <h2 align="center">Threats</h2>  
+                <h2 align="center">Threats (Negative)</h2>  
                 <div id="threat"></div>
                 <script src="threats.js"></script>
             </td>
@@ -70,16 +129,34 @@
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // Parse the Data
-        d3.csv("Opportunity Analysis Data.csv?t="+Date.now(), function(data) {
-            var cols = [data.columns] 
-            
+            // Parse the Data
+            d3.csv("Opportunity Analysis Data.csv?t="+Date.now(), function(data2) {
+            var cols = [data2.columns]
+            console.log("data: ", data2)
+            sessionStorage.origcount_O = data2.length;
+            console.log("keys cnt: ", sessionStorage.origcount_O)
+
+
+            var names = [data2.columns[4], data2.columns[10], data2.columns[11], data2.columns[12], data2.columns[13], data2.columns[14], data2.columns[15]]
+            // console.log(names)
+
+            var stored = []
+            if (sessionStorage.submitcount_O){
+                for(var i=1; i < +sessionStorage.submitcount_O+1; i++){
+                    const str = sessionStorage.getItem("O"+i.toString())
+                    const parsedobj = JSON.parse(str)
+                    stored.push(parsedobj)
+                    console.log("parsed OBJs: ", parsedobj)
+                }
+                console.log("stored OBJs: ", stored)
+            }
+
+            const data = data2.concat(stored)
+            console.log("data2: ", data)
+
             var rows = d3.map(data, function(d){return(d['PARAM NAME'])}).keys()
             // console.log(rows)
 
-            var names = [data.columns[4], data.columns[10], data.columns[11], data.columns[12], data.columns[13], data.columns[14], data.columns[15]]
-            // console.log(names)
-            
             var a = []
 
             for(let i = 0; i < names.length; i++){
@@ -90,6 +167,11 @@
                 }
                 a.push(obj)
             }
+
+            sessionStorage.origin_o = a
+            console.log(a)
+
+
 
             data.forEach(function(d) {
                 d["EST. VALUE IN CURRENCY"] = +d["EST. VALUE IN CURRENCY"];
@@ -115,13 +197,14 @@
             // draw graph initially
             redrawO("linear")
             
-            // //radio button
-            // d3.selectAll(("input[name='scale']")).on("change", function() {
-            //     // console.log(this.value)
-            //     redrawO(this.value)
-            // });
+            //radio button
+            d3.selectAll(("input[name='scaleO']")).on("change", function() {
+                // console.log(this.value)
+                redrawO(this.value)
+            });
 
             function redrawO(s) {
+                svg1.selectAll("*").remove();
                 // Add X axis
                 var x = d3.scaleBand()
                     .domain(groups)
@@ -194,7 +277,7 @@
                     .attr("height", function(d) { return height - y(1); }) // always equal to 0
                     .attr("y", function(d) { return y(1); })
                     .transition()
-                    .duration(800)
+                    .duration(500)
                     .attr("y", function(d) { return y(d.value); })
                     .attr("height", function(d) { return height - y(d.value); })
                     .delay(function(d,i){ return(i*100)});
@@ -233,7 +316,6 @@
 
         swot_form.addEventListener("submit", (e) => {
             e.preventDefault();
-
             // handle submit
             let category_form = document.getElementById('CATEGORY');
             console.log("category:", category_form.value);
@@ -252,6 +334,101 @@
 
             let max_prob = document.getElementById('MAX PROB %');
             console.log("max prob:", max_prob.value);
+
+            var threeptbsd = (+min_prob.value + +realistic_prob.value + +max_prob.value)/3
+            console.log("3 pt: ", threeptbsd)
+            var pertbsd = (+min_prob.value + (4 * +realistic_prob.value) + +max_prob.value)/6
+            console.log("pert pt: ", pertbsd)
+            var minadj = +value_in_cur.value * (+min_prob.value / 100)
+            console.log("min prob adj val: ", minadj)
+            var maxadj = +value_in_cur.value * (+max_prob.value / 100)
+            console.log("max prob adj val: ", maxadj)
+            var avgadj = (minadj+maxadj)/2
+            console.log("avg prob adj val: ", avgadj)
+            var realadj = +value_in_cur.value * (+realistic_prob.value / 100)
+            console.log("real prob adj val: ", realadj)
+            var threeptadj = +value_in_cur.value * (+threeptbsd / 100)
+            console.log("3 pt bsd adj val: ", threeptadj)
+            var pertadj = +value_in_cur.value * (+pertbsd / 100)
+            console.log("pert bsd adj val: ", pertadj)
+
+            tmp = {}
+            tmp["CATEGORY"] = category_form.value
+            tmp["PARAM NAME"] = param_name_form.value
+            tmp["EST. VALUE IN CURRENCY"] = +value_in_cur.value
+            tmp["MIN PROB  %"] = min_prob.value
+            tmp["REALISTIC PROB  %"] = realistic_prob.value
+            tmp["MAX PROB %"] = max_prob.value
+            tmp["STATS PROB % ( 3 POINT BASED)"] = Math.round(threeptbsd).toString()
+            tmp["STATS PROB % (PERT BASED)"] = Math.round(pertbsd).toString()
+            tmp["MIN PROB ADJUSTED VALUE"] = Math.round(minadj).toString()
+            tmp["MAX PROB ADJUSTED VALUE"] = Math.round(maxadj).toString()
+            tmp["AVERAGE PROB ADJUSTED VALUE"] = Math.round(avgadj).toString()
+            tmp["REALISTIC PROB ADJUSTED VALUE"] = Math.round(realadj).toString()
+            tmp["3 POINT BASED PROB ADJUSTED VALUE"] = Math.round(threeptadj).toString()
+            tmp["PERT BASED PROB ADJUSTED VALUE"] = Math.round(pertadj).toString()
+
+            function formCounter() {
+                if(category_form.value=="Strength"){
+                    if (sessionStorage.submitcount_S ) {
+                        sessionStorage.submitcount_S = Number(sessionStorage.submitcount_S) + 1;
+                    } else {
+                        sessionStorage.submitcount_S = 1;
+                        }
+                    tmp["FACTOR TYPE"] = 'POSITIVE'
+                    tmp["Sl #"] = (+sessionStorage.origcount_S + +sessionStorage.submitcount_S).toString()
+                    console.log("temp: ", tmp);
+                    const jsonobj = JSON.stringify(tmp)
+                    sessionStorage.setItem("S"+sessionStorage.submitcount_S, jsonobj)
+                }
+                console.log("Scnt: ",sessionStorage.submitcount_S);
+
+                if(category_form.value=="Weakness") {
+                    if (sessionStorage.submitcount_W) {
+                        sessionStorage.submitcount_W = Number(sessionStorage.submitcount_W) + 1;
+                    } else {
+                        sessionStorage.submitcount_W = 1;
+                        }
+                    tmp["FACTOR TYPE"] = 'NEGATIVE'
+                    tmp["Sl #"] = (+sessionStorage.origcount_W + +sessionStorage.submitcount_W).toString()
+                    console.log("temp: ", tmp);
+                    const jsonobj = JSON.stringify(tmp)
+                    sessionStorage.setItem("W"+sessionStorage.submitcount_W, jsonobj)
+                }
+                console.log("Wcnt: ",sessionStorage.submitcount_W);
+
+                if (category_form.value=="Opportunity") {
+                    if (sessionStorage.submitcount_O) {
+                        sessionStorage.submitcount_O = Number(sessionStorage.submitcount_O) + 1;
+                    } else {
+                        sessionStorage.submitcount_O = 1;
+                        }
+                    tmp["FACTOR TYPE"] = 'POSITIVE'
+                    tmp["Sl #"] = (+sessionStorage.origcount_O + +sessionStorage.submitcount_O).toString()
+                    console.log("temp: ", tmp);
+                    const jsonobj = JSON.stringify(tmp)
+                    sessionStorage.setItem("O"+sessionStorage.submitcount_O, jsonobj)
+                }
+                console.log("Ocnt: ", sessionStorage.submitcount_O);
+
+                if(category_form.value=="Threat"){
+                    if (sessionStorage.submitcount_T) {
+                        sessionStorage.submitcount_T = Number(sessionStorage.submitcount_T) + 1;
+                    } else {
+                        sessionStorage.submitcount_T = 1;
+                        }
+                    tmp["FACTOR TYPE"] = 'NEGATIVE'
+                    tmp["Sl #"] = (+sessionStorage.origcount_T + +sessionStorage.submitcount_T).toString()
+                    console.log("temp: ", tmp);
+                    const jsonobj = JSON.stringify(tmp)
+                    sessionStorage.setItem("T"+sessionStorage.submitcount_T, jsonobj)
+                }
+                console.log("Tcnt: ",sessionStorage.submitcount_T);
+                
+            }
+            formCounter();
+            
+            
     });
     </script>
 </body>
