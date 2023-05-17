@@ -1,5 +1,5 @@
 // set the dimensions and margins of the graph
-var margin2 = {top: 170, right: 50, bottom: 50, left: 50},
+var margin2 = {top: 170, right: 50, bottom: 50, left: 80},
     width = 600 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -64,6 +64,12 @@ d3.csv("Threat Analysis Data.csv?t="+Date.now(), function(data) {
             .range([ height, 0 ]);
     svg3.append("g")
             .call(d3.axisLeft(y));
+    svg3.append("text")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -margin2.left+20)
+    .attr("x", -margin2.top+120)
+    .text("Value in Currency ($)")
 
     // Another scale for subgroup position?
     var xSubgroup = d3.scaleBand()
@@ -90,7 +96,11 @@ d3.csv("Threat Analysis Data.csv?t="+Date.now(), function(data) {
         .attr("x", function(d) { return xSubgroup(d.key); })
         .attr("y", function(d) { return 0; })
         .attr("width", xSubgroup.bandwidth())
-        .attr("height", function(d) { return y(d.value); })
-        .attr("fill", function(d) { return color(d.key); });
+        .attr("fill", function(d) { return color(d.key); })
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(800)
+        .delay(function(d,i){ return(i*100)})
+        .attr("height", function(d) { return y(d.value); });
 
     })
