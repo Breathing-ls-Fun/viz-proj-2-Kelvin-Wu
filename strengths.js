@@ -53,7 +53,7 @@ d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data) {
     // });
 
     function redrawS(s) {
-        svg0.selectAll("*").remove();
+        // svg0.selectAll("*").remove();
         // Add X axis
         var x = d3.scaleBand()
             .domain(groups)
@@ -104,9 +104,10 @@ d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data) {
                     .padding([0.05])
 
         // color palette = one color per subgroup
+        var colors = ['#e41a1c','#377eb8','#4daf4a', '#8820da', '#dede43', '#71f3ba']
         var color = d3.scaleOrdinal()
                 .domain(subgroups)
-                .range(['#e41a1c','#377eb8','#4daf4a', '#8820da', '#dede43', '#71f3ba'])
+                .range(colors)
 
         // Show the bars
         svg0.append("g")
@@ -125,10 +126,35 @@ d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data) {
             .attr("height", function(d) { return height - y(1); }) // always equal to 0
             .attr("y", function(d) { return y(1); })
             .transition()
-            .duration(800)
+            .duration(500)
             .attr("y", function(d) { return y(d.value); })
             .attr("height", function(d) { return height - y(d.value); })
             .delay(function(d,i){ return(i*100)});
-        }
+            
+            var legendElement = svg0.append("g")
+                            .attr("class", "legend__container")
+                            .attr("transform", `translate(${width/4}, ${margin.top-90})`) // set our group position to the end of the chart
+                            .selectAll("g.legend__element")
+                            .data(xSubgroup.domain()) // use the scale domain as data
+                            .enter()
+                            .append("g")
+                            .attr("transform", function(d, i) {
+                                return `translate(0, ${i * 15})`; // provide an offset for each element found in the domain
+                            });
 
+            legendElement.append("text")
+                .attr("x", 15)
+                .attr("font-size", "14px")
+                .text(d => d);
+
+            legendElement.append("rect")
+                    .attr("x", 0)
+                    .attr("y", -10)
+                    .attr("width", 10)
+                    .attr("height", 10)
+                    .attr("fill", function(d, i) {
+                        return colors[i%colors.length]; // use the same category color that we previously used in rects
+                    });
+        
+            }
     })

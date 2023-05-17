@@ -1,7 +1,7 @@
 // set the dimensions and margins of the graph
-var margin2 = {top: 170, right: 50, bottom: 50, left: 80},
-    width = 600 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var margin2 = {top: 160, right: 50, bottom: 50, left: 80},
+    width = 600 - margin2.left - margin2.right,
+    height = 500 - margin2.top - margin2.bottom;
 
 // append the svg object to the body of the page
 var svg2 = d3.select("#weakness")
@@ -47,7 +47,7 @@ d3.csv("Weakness Analysis Data.csv?t="+Date.now(), function(data) {
     redrawW("linear")
 
     function redrawW(s) {
-        svg1.selectAll("*").remove();
+        svg2.selectAll("*").remove();
         // Add X axis
         var x = d3.scaleBand()
                 .domain(groups)
@@ -87,8 +87,8 @@ d3.csv("Weakness Analysis Data.csv?t="+Date.now(), function(data) {
                 svg2.append("text")
                     .attr("text-anchor", "end")
                     .attr("transform", "rotate(-90)")
-                    .attr("y", -margin.left+20)
-                    .attr("x", -margin.top+120)
+                    .attr("y", -margin2.left+20)
+                    .attr("x", -margin2.top+120)
                     .text("Value in Currency ($)")
             }
         // Another scale for subgroup position?
@@ -98,9 +98,10 @@ d3.csv("Weakness Analysis Data.csv?t="+Date.now(), function(data) {
                         .padding([0.05])
 
         // color palette = one color per subgroup
+        var colors = ['#093854','#fad942','#8884ab', '#619821', '#de0909', '#3662ff']
         var color = d3.scaleOrdinal()
                     .domain(subgroups)
-                    .range(['#093854','#fad942','#8884ab', '#619821', '#de0909', '#3662ff'])
+                    .range(colors)
 
         // Show the bars
         svg2.append("g")
@@ -119,8 +120,33 @@ d3.csv("Weakness Analysis Data.csv?t="+Date.now(), function(data) {
             .attr("fill", function(d) { return color(d.key); })
             .transition()
             .ease(d3.easeLinear)
-            .duration(800)
+            .duration(500)
             .delay(function(d,i){ return(i*100)})
             .attr("height", function(d) { return y(d.value); });
+            
+        var legendElement = svg2.append("g")
+            .attr("class", "legend__container")
+            .attr("transform", `translate(${width/4}, ${margin.bottom+60})`) // set our group position to the end of the chart
+            .selectAll("g.legend__element")
+            .data(xSubgroup.domain()) // use the scale domain as data
+            .enter()
+            .append("g")
+            .attr("transform", function(d, i) {
+                return `translate(0, ${i * 15})`; // provide an offset for each element found in the domain
+            });
+
+        legendElement.append("text")
+        .attr("x", 15)
+        .attr("font-size", "14px")
+        .text(d => d);
+
+        legendElement.append("rect")
+            .attr("x", 0)
+            .attr("y", -10)
+            .attr("width", 10)
+            .attr("height", 10)
+            .attr("fill", function(d, i) {
+                return colors[i%colors.length]; // use the same category color that we previously used in rects
+            });
     }
 })

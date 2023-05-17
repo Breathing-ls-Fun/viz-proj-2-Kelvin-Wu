@@ -5,12 +5,11 @@ var margin = {top: 50, right: 50, bottom: 200, left: 80},
 
 // append the svg object to the body of the page
 var svg1 = d3.select("#opportunity")
-  .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Parse the Data
 d3.csv("Opportunity Analysis Data.csv?t="+Date.now(), function(data) {
@@ -42,18 +41,28 @@ d3.csv("Opportunity Analysis Data.csv?t="+Date.now(), function(data) {
 
     // List of groups = species here = value of the first column called group -> I show them on the X axis
     var groups = names
-    
+    // Add X axis
+    var x = d3.scaleBand()
+        .domain(groups)
+        .range([0, width])
+        .padding([0.2])
+    svg1.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-50)")
+        .style("text-anchor", "end");
+
     // draw graph initially
-    redrawS("linear")
+    redrawO("linear")
     
     // //radio button
     // d3.selectAll(("input[name='scale']")).on("change", function() {
     //     // console.log(this.value)
-    //     redrawS(this.value)
+    //     redrawO(this.value)
     // });
 
-    function redrawS(s) {
-        svg1.selectAll("*").remove();
+    function redrawO(s) {
         // Add X axis
         var x = d3.scaleBand()
             .domain(groups)
