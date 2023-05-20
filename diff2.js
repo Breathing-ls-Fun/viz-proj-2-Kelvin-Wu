@@ -88,7 +88,7 @@ min_val_d = d3.min(diff_data, function(d){return d["neg"]})
 
 // Add Y axis
 var y = d3.scaleLinear()
-    .domain([-1*max_val_d, max_val_d])
+    .domain([-1*Math.max(Math.abs(min_val_d), max_val_d), Math.max(Math.abs(min_val_d), max_val_d)])
     .range([ height_diff, 0 ]);
 svg_diff.append("g")
     .call(d3.axisLeft(y));
