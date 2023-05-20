@@ -12,6 +12,15 @@ var svg0 = d3.select("#strength")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
+var svg0_sum = d3.select("#sum_str")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+
 // Parse the Data
 d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data2) {
     var cols = [data2.columns]
@@ -67,13 +76,85 @@ d3.csv("Strength AnalysisData.csv?t="+Date.now(), function(data2) {
     
     // draw graph initially
     redrawS("linear")
-    
+
     //radio button
     d3.selectAll(("input[name='scaleS']")).on("change", function() {
         // console.log(this.value)
         redrawS(this.value)
     });
 
+    drawSumS()
+
+    function drawSumS(){
+        svg0_sum.selectAll("*").remove();
+
+        var sum_data = []
+        for(let i = 0; i < names.length; i++) {
+            var sum = {}
+            var total = 0
+            sum["name"] = names[i];
+            for(let j = 0; j < rows.length; j++){
+                total = total + +data[j][names[i]]
+            }
+            sum['value'] = total
+            sum_data.push(sum)
+        }
+        // console.log('sum data:', sum_data)
+        
+        max_val = d3.max(sum_data, function(d){return d['value']})
+        // console.log('max:', max_val)
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+            .domain([0, max_val*1.1])
+            .range([ height, 0 ]);
+        svg0_sum.append("g")
+                .call(d3.axisLeft(y));
+        svg0_sum.append("text")
+            .attr("text-anchor", "end")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -margin.left+20)
+            .attr("x", -margin.top)
+            .text("Value in Currency ($)");
+
+        // color palette = one color
+        var colors = ['#000000']
+        var color = d3.scaleOrdinal()
+                .domain(groups)
+                .range(colors)
+
+
+        // X axis
+        var x = d3.scaleBand()
+        .range([ 0, width ])
+        .domain(sum_data.map(function(d) { return d.name; }))
+        .padding(0.2);
+        svg0_sum.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+
+        // Bars
+        svg0_sum.selectAll("mybar")
+        .data(sum_data)
+        .enter()
+        .append("rect")
+        .attr("x", function(d) { return x(d['name']); })
+        .attr("width", x.bandwidth())
+        .attr("fill", "#000000")
+        .attr("height", function(d) { return height - y(0); }) // always equal to 0
+        .attr("y", function(d) { return y(0); })
+        .transition()
+        .ease(d3.easeLinear)
+        .duration(500)
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); })
+        .delay(function(d,i){ return(i*100)});
+        
+
+    }
     function redrawS(s) {
         svg0.selectAll("*").remove();
         // Add X axis

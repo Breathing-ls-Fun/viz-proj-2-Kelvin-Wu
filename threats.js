@@ -12,6 +12,13 @@ var svg3 = d3.select("#threat")
     .attr("transform",
           "translate(" + margin2.left + "," + margin2.top + ")");
 
+var svg3_sum = d3.select("#sum_thr")
+    .append("svg")
+    .attr("width", width + margin2.left + margin2.right)
+    .attr("height", height + margin2.top + margin2.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
 // Parse the Data
 d3.csv("Threat Analysis Data.csv?t="+Date.now(), function(data2) {
     var cols = [data2.columns]
@@ -72,6 +79,77 @@ d3.csv("Threat Analysis Data.csv?t="+Date.now(), function(data2) {
         // console.log(this.value)
         redrawT(this.value)
     });
+
+    drawSumT()
+
+    function drawSumT(){
+        svg3_sum.selectAll("*").remove();
+
+        var sum_data = []
+        for(let i = 0; i < names.length; i++) {
+            var sum = {}
+            var total = 0
+            sum["name"] = names[i];
+            for(let j = 0; j < rows.length; j++){
+                total = total + +data[j][names[i]]
+            }
+            sum['value'] = total
+            sum_data.push(sum)
+        }
+        // console.log('sum data:', sum_data)
+        
+        min_val = d3.min(sum_data, function(d){return d['value']})
+        // console.log('max:', max_val)
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+            .domain([min_val*1.1, 0])
+            .range([ height, 0 ]);
+        svg3_sum.append("g")
+                .call(d3.axisLeft(y));
+        svg3_sum.append("text")
+                .attr("text-anchor", "end")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -margin2.left+20)
+                .attr("x", -margin2.top+120)
+                .text("Value in Currency ($)")
+
+        // color palette = one color
+        var colors = ['#000000']
+        var color = d3.scaleOrdinal()
+                .domain(groups)
+                .range(colors)
+
+
+        // X axis
+        var x = d3.scaleBand()
+            .range([ 0, width ])
+            .domain(sum_data.map(function(d) { return d.name; }))
+            .padding(0.2);
+        svg3_sum.append("g")
+            .attr("transform", "translate(0,0)")
+            .call(d3.axisTop(x))
+            .selectAll("text")
+            .attr("transform", "translate(0,0)rotate(50)")
+            .style("text-anchor", "end");
+
+        // Bars
+        svg3_sum.selectAll("mybar")
+            .data(sum_data)
+            .enter()
+            .append("rect")
+            .attr("x", function(d) { return x(d['name']); })
+            .attr("y", function(d) { return 0; })
+            .attr("width", x.bandwidth())
+            // .attr("height", function(d) { return y(d['value']); })
+            .attr("fill", "#ff0000")
+            .transition()
+            .ease(d3.easeLinear)
+            .duration(500)
+            .delay(function(d,i){ return(i*100)})
+            .attr("height", function(d) { return y(d.value); });
+
+    }
 
     function redrawT(s) {
         svg3.selectAll("*").remove();
